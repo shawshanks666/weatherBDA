@@ -1,0 +1,389 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="monthlyChart" width="400" height="200"></canvas>
+    <canvas id="yearlyChart" width="400" height="200"></canvas>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data');
+            return response.json();
+        }
+
+        fetchData().then(data => {
+            const monthlyTemperatures = data.monthlyTemperatures;
+            const years = data.years;
+            const yearlyTemperatures = data.yearlyTemperatures;
+
+            // Example data for monthly chart
+            const monthlyLabels = [...Array(12).keys()].map(i => new Date(0, i).toLocaleString('default', { month: 'short' }));
+
+            const monthlyData = {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Avg Temperature (Monthly)',
+                    data: monthlyTemperatures,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true
+                }]
+            };
+
+            // Example data for yearly chart
+            const yearlyData = {
+                labels: years,
+                datasets: [{
+                    label: 'Avg Temperature (Yearly)',
+                    data: yearlyTemperatures,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true
+                }]
+            };
+
+            // Monthly Chart
+            const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+            const monthlyChart = new Chart(ctxMonthly, {
+                type: 'line',
+                data: monthlyData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Yearly Chart
+            const ctxYearly = document.getElementById('yearlyChart').getContext('2d');
+            const yearlyChart = new Chart(ctxYearly, {
+                type: 'line',
+                data: yearlyData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Weather Data Visualization</h1>
+    <canvas id="tempVsPrecipitation" width="400" height="200"></canvas>
+    <canvas id="cloudVsTemp" width="400" height="200"></canvas>
+    <canvas id="pressureVsTemp" width="400" height="200"></canvas>
+
+    <script>
+        async function fetchMonthlyData() {
+            const response = await fetch('/monthly-data');
+            return await response.json();
+        }
+
+        async function renderCharts() {
+            const data = await fetchMonthlyData();
+
+            // Chart: Temperature vs. Precipitation
+            const ctx1 = document.getElementById('tempVsPrecipitation').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Avg Temperature (°C)',
+                            data: data.temperatures,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            fill: false,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Total Precipitation (mm)',
+                            data: data.precipitation,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            fill: false,
+                            yAxisID: 'y1',
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Avg Temperature (°C)',
+                            },
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Total Precipitation (mm)',
+                            },
+                            grid: {
+                                drawOnChartArea: false, // Only want the grid lines for one axis to show up
+                            },
+                        }
+                    }
+                }
+            });
+
+            // Chart: Cloud Cover vs. Temperature
+            const ctx2 = document.getElementById('cloudVsTemp').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Avg Temperature (°C)',
+                            data: data.temperatures,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            fill: false,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Avg Cloud Cover (oktas)',
+                            data: data.cloudCover,
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            fill: false,
+                            yAxisID: 'y1',
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Avg Temperature (°C)',
+                            },
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Avg Cloud Cover (oktas)',
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+
+            // Chart: Pressure vs. Temperature
+            const ctx3 = document.getElementById('pressureVsTemp').getContext('2d');
+            new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Avg Temperature (°C)',
+                            data: data.temperatures,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            fill: false,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Avg Pressure (Pa)',
+                            data: data.pressure,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false,
+                            yAxisID: 'y1',
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Avg Temperature (°C)',
+                            },
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Avg Pressure (Pa)',
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+        }
+
+        renderCharts();
+    </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        canvas {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            border: 1px solid #ccc; /* Optional border */
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Data Visualization</h1>
+    
+    <label for="yearSelect">Select Year:</label>
+    <select id="yearSelect"></select>
+    
+    <canvas id="chart" width="400" height="400"></canvas>
+    
+    <script>
+        const ctx = document.getElementById('chart').getContext('2d');
+        const yearSelect = document.getElementById("yearSelect");
+        let myChart;
+
+        // Fetch data from the server
+        const fetchData = async () => {
+            const response = await fetch('/data');
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            return data;
+        };
+
+        const renderChart = (yearData, year) => {
+            const months = ["January", "February", "March", "April", "May", "June", 
+                            "July", "August", "September", "October", "November", "December"];
+            const avgTemperatures = yearData.map(d => d.avgTemperature);
+            const totalPrecipitations = yearData.map(d => d.totalPrecipitation);
+
+            if (myChart) {
+                myChart.destroy(); // Destroy previous chart if it exists
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Average Temperature (°C)',
+                            data: avgTemperatures,
+                            borderColor: 'steelblue',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Total Precipitation (mm)',
+                            data: totalPrecipitations,
+                            borderColor: 'orange',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C) / Precipitation (mm)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: `Weather Data for ${year}`
+                        }
+                    }
+                }
+            });
+        };
+
+        // Initialize the year selection
+        const initYearSelect = async () => {
+            const data = await fetchData();
+            const years = Object.keys(data);
+            yearSelect.innerHTML = ''; // Clear previous options
+            years.forEach(year => {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+            
+            // Render the chart for the first year by default
+            renderChart(data[years[0]], years[0]);
+        };
+
+        // Fetch and initialize the data
+        initYearSelect();
+
+        // Event listener for year change
+        yearSelect.addEventListener("change", function() {
+            const selectedYear = this.value;
+            fetchData().then(data => {
+                renderChart(data[selectedYear], selectedYear);
+            });
+        });
+    </script>
+</body>
+</html>
+
